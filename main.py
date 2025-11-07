@@ -4,6 +4,11 @@ import uvicorn
 
 from contas_a_pagar_e_receber import contas_a_pagar_e_receber_router
 
+from shared.database import engine, Base
+from contas_a_pagar_e_receber.models.contas_a_pagar_e_receber_model import ContaPagarReceber
+
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
 
 
