@@ -25,23 +25,16 @@ class ContasPagarReceberResquest(BaseModel):
     valor: Decimal
     tipo: str
 
-@router.get("", response_model=List[ContasPagarReceberResponse])
-def listarContas():
-    return [
-        ContasPagarReceberResponse(
-            id=1,
-            descricao="contas a pagar teste",
-            tipo="Pagar",
-            valor=2000.00
-        ),
-        ContasPagarReceberResponse(
-            id=2,
-            descricao="contas a pagar teste",
-            tipo="Receber",
-            valor=3000.00
-        ),
-    ]
-    
+@router.get("", response_model=List[ContasPagarReceberResponse], status_code=200)
+def listar_contas(db: Session = Depends(get_db)):
+    contas = db.query(ContaPagarReceber).all()
+    return contas
+
+@router.get("/{id}", response_model=ContasPagarReceberResponse, status_code=200)
+def exibir_conta(id: int, db: Session = Depends(get_db)):
+    conta = db.query(ContaPagarReceber).get(id)
+    return conta
+
     
 @router.post("", response_model=ContasPagarReceberResponse, status_code=201)
 def criar_conta(conta_request: ContasPagarReceberResquest, db: Session = Depends(get_db)):
@@ -55,3 +48,25 @@ def criar_conta(conta_request: ContasPagarReceberResquest, db: Session = Depends
     db.refresh(conta)
 
     return conta
+
+
+@router.put("/{id}", response_model=ContasPagarReceberResponse, status_code=200)
+def atualizar_conta(id: int, conta_a_pagar_receber_request: ContasPagarReceberResquest, db: Session = Depends(get_db)):
+
+    conta = db.query(ContaPagarReceber).get(id)
+
+    for campo, valor in conta_a_pagar_receber_request.dict().items():
+        setattr(conta, campo, valor)
+
+    db.commit()
+    db.refresh(conta)
+    return conta
+
+
+@router.delete("/{id}", status_code=204)
+def deletar_conta(id: int, db: Session = Depends(get_db)):
+    conta = db.query(ContaPagarReceber).get(id)
+    db.delete(conta)
+    db.commit()
+    return None
+
