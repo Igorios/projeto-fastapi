@@ -7,6 +7,7 @@ from fastapi.params import Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from contas_a_pagar_e_receber.models.contas_a_pagar_e_receber_model import ContaPagarReceber
+from contas_a_pagar_e_receber.fornecedor_cliente_router import FornecedorClienteResponse
 from shared.dependencies import get_db
 from shared.exceptions import NotFound
 
@@ -17,6 +18,7 @@ class ContasPagarReceberResponse(BaseModel):
     descricao: str
     valor: Decimal
     tipo: str
+    fornecedor: FornecedorClienteResponse | None = None
 
     class Config:
         orm_mode = True
@@ -25,6 +27,7 @@ class ContasPagarReceberResquest(BaseModel):
     descricao: str
     valor: Decimal
     tipo: str
+    fornecedor_cliente_id: int | None = None
 
 @router.get("", response_model=List[ContasPagarReceberResponse], status_code=200)
 def listar_contas(db: Session = Depends(get_db)):
