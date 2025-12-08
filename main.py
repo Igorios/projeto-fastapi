@@ -3,10 +3,11 @@ from fastapi import FastAPI
 import uvicorn
 from shared.exceptions_handler import not_found_exception_handle
 
-from contas_a_pagar_e_receber import contas_a_pagar_e_receber_router
+from contas_a_pagar_e_receber import contas_a_pagar_e_receber_router, fornecedor_cliente_router
 
 from shared.database import engine, Base
 from contas_a_pagar_e_receber.models.contas_a_pagar_e_receber_model import ContaPagarReceber
+from contas_a_pagar_e_receber.models.fornecedor_cliente_model import FornecedorCliente
 from shared.exceptions import NotFound
 
 Base.metadata.create_all(bind=engine)
@@ -19,6 +20,7 @@ def ping():
     return "pong"
 
 app.include_router(contas_a_pagar_e_receber_router.router)
+app.include_router(fornecedor_cliente_router.router)
 app.add_exception_handler(NotFound, not_found_exception_handle)
 
 if __name__ == "__main__":
